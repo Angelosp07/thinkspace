@@ -1,0 +1,5 @@
+.env*
+.dev.vars
+.git
+dist
+site.tar.gz

@@ -251,3 +251,18 @@ English speech and heuristic interim previews can be imperfect. Model-selected c
 ## Credits
 
 Built during the 1 November 2026 hackathon with Codex. Codex contributed the speech/graph pipeline, conceptual editing and merging, server-side OpenAI integrations, 3D layout, UI, scenario calculator and regression checks. OpenAI Sites Worker ESM starter supplied the build/validation scaffolding. Sample businesses and financial figures are illustrative.
+
+## Deploy to Vercel
+
+The repository includes `vercel.json` and `api/index.js` so the UI and API run together on Vercel. Import this GitHub repository into Vercel using the **Other** framework preset and the repository root directory; keep the checked-in build settings. Add `OPENAI_API_KEY` as a server-side environment variable for Production (and Preview if needed). Optional model overrides are described above. Redeploy after changing environment variables. Local `.env.local` files are excluded from uploads.
+
+Alternatively, from the repository directory:
+
+```sh
+npx vercel login
+npx vercel
+npx vercel env add OPENAI_API_KEY production
+npx vercel --prod
+```
+
+Enter the key at the CLI prompt, never in source control. The first deployment works in Demo mode until the server key is configured. Live API requests consume that key's quota; only share a live deployment with the intended audience. Vercel serves HTTPS, which permits microphone access with browser permission. Saved local projects do not transfer automatically: export/import project JSON to move from localhost to the hosted origin. Image caches on the server are temporary; browser storage remains local to each visitor.
