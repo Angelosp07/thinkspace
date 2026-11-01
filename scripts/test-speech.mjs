@@ -1,0 +1,10 @@
+import vm from 'node:vm';
+import assert from 'node:assert/strict';
+import worker from '../worker/index.js';
+const html=await(await worker.fetch(new Request('http://localhost/'))).text();
+const script=html.split('<script>')[1].split('</script>')[0];
+const functions=script.slice(script.indexOf('function enqueueSpeech'),script.indexOf('async function transcribeSegments'));
+const code="let busy=true,scenario=null,speechQueue=[],pendingSpeech='',flushTimer=null;const processed=[];function turn(text){processed.push(text);busy=true}function notice(){};"+functions+"\nenqueueSpeech('first phrase');enqueueSpeech('second phrase');if(speechQueue.length!==2)throw Error('Speech was lost while busy');busy=false;drainSpeech();if(processed[0]!=='first phrase second phrase')throw Error('Queue order lost');busy=true;enqueueSpeech('third phrase');busy=false;scenario={};drainSpeech();if(speechQueue.length!==1)throw Error('Scenario discarded queued speech');scenario=null;drainSpeech();if(processed[1]!=='third phrase')throw Error('Queue did not resume');";
+vm.runInNewContext(code,{setTimeout,clearTimeout});
+assert(script.includes('recognition.interimResults=true'));assert(script.includes('previewSpeech(pendingSpeech'));
+console.log('Passed: continuous speech queue, ordered batching, scenario pause/resume and interim preview wiring.');

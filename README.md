@@ -16,7 +16,7 @@ Open http://localhost:3000. OPENAI_API_KEY is read server-side from the ignored 
 
 Start blank and describe an idea, or load the illustrative food-service sample. Select nodes to edit Markdown and JSON properties. Ask “What if delivery costs rise to £6?” to preview a scenario, then Apply or Discard. Create an editable plan. JSON export preserves the project; Markdown import adds a sourced node. Local browser storage persists the current project.
 
-One Talk control uses browser speech recognition where supported; other browsers record audio and send it for server-side transcription. Typed input always works. Live speech in the browser recognition path updates after completed speech segments; MediaRecorder mode updates after Stop. Optional spoken answers use the browser voice engine.
+One Talk control uses browser speech recognition where supported; other browsers transcribe successive 4.5-second audio segments. Typed input always works. Live speech in the browser recognition path updates after completed speech segments; MediaRecorder mode updates automatically as segments are transcribed. Provisional concepts appear during interim browser recognition and are replaced by saved AI interpretations. Speech is queued during AI work. Optional spoken answers use the browser voice engine.
 
 ## Verification
 
