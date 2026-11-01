@@ -3,3 +3,4 @@ site.tar.gz
 
 .env*
 .dev.vars
+.DS_Store

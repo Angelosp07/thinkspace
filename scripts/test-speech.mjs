@@ -13,9 +13,9 @@ assert.equal(extractSpeechPreview('Restaurants',{nodes:[{id:'r',title:'Restauran
 assert(!extractSpeechPreview('We are considering profitability and affordability',p).nodes.length);
 assert.deepEqual(extractSpeechPreview('A garden planning app connects gardeners with nurseries',p).nodes.map(n=>n.title),['Garden planning app','Gardeners','Nurseries']);
 const html=await(await worker.fetch(new Request('http://localhost/'))).text(),script=html.split('<script>')[1].split('</script>')[0];
-const functions=script.slice(script.indexOf('function previewSpeech'),script.indexOf('async function transcribeSegments'));
-const code="let busy=true,scenario=null,speechQueue=[],pendingSpeech='',pendingContext=null,flushTimer=null,mode='create',selected='a';const processed=[],elements={};const $=id=>elements[id]||(elements[id]={});function turn(text,forcedIntent,ctx){processed.push({text,ctx});busy=true}function notice(){}function refreshDraft(){}function context(){return {mode,selected,epoch:0}};"+functions+`
-previewSpeech('I want restaurants and students');
+const functions=script.slice(script.indexOf('function previewSpeech'),script.indexOf('function voiceState'));
+const code="let busy=true,scenario=null,retryThought=null,speechQueue=[],pendingSpeech='',pendingContext=null,flushTimer=null,mode='create',selected='a';const processed=[],elements={};const $=id=>elements[id]||(elements[id]={});function turn(text,forcedIntent,ctx){processed.push({text,ctx});busy=true}function notice(){}function saveSpeechState(){}function captureSpeech(){}function workState(text){$('#status').textContent=text}function refreshDraft(){}function context(){return {mode,selected,epoch:0}};"+functions+`
+$('#status').textContent='Finding the structure…';previewSpeech('I want restaurants and students');if($('#status').textContent!=='Finding the structure…')throw Error('Speech overwrote the working indicator');
 if($('#thought').value!=='I want restaurants and students')throw Error('Transcript is missing');
 enqueueSpeech('first phrase');enqueueSpeech('second phrase');busy=false;drainSpeech();if(processed[0].text!=='first phrase second phrase')throw Error('Queue order lost');
 busy=true;enqueueSpeech('third phrase');busy=false;scenario={};drainSpeech();if(speechQueue.length!==1)throw Error('Scenario discarded queued speech');scenario=null;drainSpeech();
@@ -23,5 +23,6 @@ acceptSpeech('Reservations have');acceptSpeech('a pickup time');flushSpeech();bu
 mode='edit';selected='a';enqueueSpeech('change the deadline');selected='b';enqueueSpeech('change the name');mode='advice';enqueueSpeech('evaluate it');busy=false;drainSpeech();if(speechQueue.length!==2||processed[3].ctx.selected!=='a')throw Error('Selected-node context was lost');busy=false;drainSpeech();if(speechQueue.length!==1||processed[4].ctx.selected!=='b')throw Error('Edits to different nodes were merged');busy=false;drainSpeech();if(processed[5].ctx.mode!=='advice')throw Error('Mode context was lost');
 `;
 vm.runInNewContext(code,{setTimeout:()=>1,clearTimeout:()=>{}});
-assert(script.includes('if(Speech){'));assert(script.includes('recognition.interimResults=true'));new vm.Script(script);
+const many=extractSpeechPreview('Bakery, Cafe, Garden, Residents, Volunteers, Couriers, School, Library, Market, Orchard, Florist, Restaurant, Compost hub, Seed bank.',p);assert.equal(many.nodes.length,14,'Later concepts must not be hidden after twelve previews');
+assert(!script.includes('SpeechRecognition'));assert(!script.includes('MediaRecorder'));assert(script.includes('startOpenAISpeech'));assert(script.includes("fetch('/api/realtime'"));new vm.Script(script);
 console.log('Passed: incremental noun mentions, labelled preview relationships, financial detail exclusion, transcript isolation, mode-aware ordered speech and scenario pause/resume.');
