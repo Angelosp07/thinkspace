@@ -6,6 +6,6 @@
     "build": "bash scripts/build.sh",
     "validate": "node scripts/validate-artifact.mjs",
     "dev": "node scripts/dev.mjs",
-    "test": "node scripts/test.mjs"
+    "test": "node scripts/test.mjs && node scripts/test-model.mjs && node scripts/test-speech.mjs && node scripts/test-modes.mjs"
   }
 }
