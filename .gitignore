@@ -6,3 +6,4 @@ site.tar.gz
 .DS_Store
 .vercel/
 public/
+.vercel
